@@ -1,0 +1,25 @@
+# BEGIN WordPress
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+
+
+# Reindirizza www a non-www
+RewriteCond %{HTTP_HOST} ^www.pippo.com [NC]
+RewriteRule ^(.*)$ https://pippo.com/$1 [L,R=301]
+
+# Reindirizza non-www a www
+# RewriteCond %{HTTP_HOST} !^www\. [NC]
+# RewriteCond %{HTTP_HOST} !^$
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+
+# Regole Wordpress
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+
+# END WordPress
