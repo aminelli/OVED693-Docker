@@ -35,19 +35,21 @@ services:
       MONGO_INITDB_DATABASE: testdb
 
   nifi:
-    image: apache/nifi:2.6.0
+    image: apache/nifi:latest
     container_name: nifi
     hostname: nifi
     restart: unless-stopped
     networks:
       - net-dwh
     ports:
-      - "8080:8080"
+      # - "8080:8080"
+      - "8443:8443"
     environment:
-      NIFI_WEB_HTTP_PORT: 8080
-      NIFI_WEB_HTTP_HOST: 0.0.0.0
-      SINGLE_USER_CREDENTIALS_USERNAME: admin
-      SINGLE_USER_CREDENTIALS_PASSWORD: CorsiDocker2026
+      # NIFI_WEB_HTTP_PORT: 8080
+      # NIFI_WEB_HTTP_HOST: 0.0.0.0
+      NIFI_WEB_HTTPS_HOST: 0.0.0.0
+      # SINGLE_USER_CREDENTIALS_USERNAME: admin
+      # SINGLE_USER_CREDENTIALS_PASSWORD: CorsiDocker2026
 
 volumes:
   vol-mysql-data:
@@ -56,3 +58,4 @@ volumes:
 networks:
   net-dwh:
     driver: bridge
+
