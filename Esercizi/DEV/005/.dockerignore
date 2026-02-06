@@ -1,0 +1,11 @@
+# File e directory da escludere dal build context di Docker
+.git
+.gitignore
+.dockerignore
+README.md
+*.md
+.vscode
+.idea
+*.log
+.env.example
+docker-compose.yml
