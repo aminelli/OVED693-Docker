@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t dotnet-app-test:latest .
+docker build --no-cache -t dotnet-app-test:latest .
