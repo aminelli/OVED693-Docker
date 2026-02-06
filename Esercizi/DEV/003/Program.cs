@@ -4,15 +4,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    
 }
 
 // Route principale
@@ -22,8 +21,7 @@ app.MapGet("/", () => new
     Timestamp = DateTime.UtcNow,
     Version = "1.0.0"
 })
-.WithName("GetRoot")
-.WithOpenApi();
+.WithName("GetRoot");
 
 // Route per lista clienti
 app.MapGet("/api/customers", () =>
@@ -37,8 +35,7 @@ app.MapGet("/api/customers", () =>
     };
     return Results.Ok(customers);
 })
-.WithName("GetCustomers")
-.WithOpenApi();
+.WithName("GetCustomers");
 
 // Route per singolo cliente
 app.MapGet("/api/customers/{id}", (int id) =>
@@ -54,8 +51,7 @@ app.MapGet("/api/customers/{id}", (int id) =>
     var customer = customers.FirstOrDefault(c => c.Id == id);
     return customer != null ? Results.Ok(customer) : Results.NotFound(new { Error = "Cliente non trovato" });
 })
-.WithName("GetCustomer")
-.WithOpenApi();
+.WithName("GetCustomer");
 
 // Route POST per echo
 app.MapPost("/api/echo", ([FromBody] object data) =>
@@ -67,8 +63,7 @@ app.MapPost("/api/echo", ([FromBody] object data) =>
         Timestamp = DateTime.UtcNow
     });
 })
-.WithName("Echo")
-.WithOpenApi();
+.WithName("Echo");
 
 // Route per informazioni sistema
 app.MapGet("/api/info", () =>
@@ -83,8 +78,7 @@ app.MapGet("/api/info", () =>
         AspNetCoreEnvironment = app.Environment.EnvironmentName
     });
 })
-.WithName("GetInfo")
-.WithOpenApi();
+.WithName("GetInfo");
 
 // Route per calcoli matematici
 app.MapGet("/api/calculate", ([FromQuery] double num1, [FromQuery] double num2, [FromQuery] string op) =>
@@ -113,8 +107,7 @@ app.MapGet("/api/calculate", ([FromQuery] double num1, [FromQuery] double num2, 
         return Results.BadRequest(new { Error = ex.Message });
     }
 })
-.WithName("Calculate")
-.WithOpenApi();
+.WithName("Calculate");
 
 // Health check
 app.MapGet("/health", () =>
@@ -126,8 +119,7 @@ app.MapGet("/health", () =>
         Uptime = TimeSpan.FromMilliseconds(Environment.TickCount64)
     });
 })
-.WithName("HealthCheck")
-.WithOpenApi();
+.WithName("HealthCheck");
 
 // Route per meteo (esempio)
 app.MapGet("/api/weather", () =>
@@ -143,7 +135,6 @@ app.MapGet("/api/weather", () =>
 
     return Results.Ok(forecasts);
 })
-.WithName("GetWeather")
-.WithOpenApi();
+.WithName("GetWeather");
 
 app.Run();
