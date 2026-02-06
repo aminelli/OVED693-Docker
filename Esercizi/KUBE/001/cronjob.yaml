@@ -1,0 +1,88 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-database-cronjob
+  namespace: default
+spec:
+  # Esegui ogni giorno alle 2:00 AM
+  schedule: "0 2 * * *"
+  
+  # Numero di job completati da mantenere nello storico
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  
+  # Politica di concorrenza: Allow, Forbid, Replace
+  concurrencyPolicy: Forbid
+  
+  # Sospendi l'esecuzione se necessario
+  suspend: false
+  
+  # Template del Job da eseguire
+  jobTemplate:
+    spec:
+      # Numero di retry in caso di fallimento
+      backoffLimit: 2
+      
+      # Tempo massimo di esecuzione (in secondi)
+      activeDeadlineSeconds: 600
+      
+      template:
+        metadata:
+          labels:
+            app: backup-job
+        spec:
+          # Politica di riavvio del pod
+          restartPolicy: OnFailure
+          
+          containers:
+          - name: backup-container
+            image: backup-app:1.0
+            imagePullPolicy: IfNotPresent
+            
+            # Comando da eseguire
+            command:
+            - /bin/sh
+            - -c
+            - python /app/backup.py
+            
+            # Variabili d'ambiente
+            env:
+            - name: DB_HOST
+              value: "postgres-service"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: database-name
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            
+            # Risorse richieste e limiti
+            resources:
+              requests:
+                memory: "128Mi"
+                cpu: "100m"
+              limits:
+                memory: "256Mi"
+                cpu: "200m"
+            
+            # Volume mounts
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backups
+          
+          # Volumi
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: backup-pvc
